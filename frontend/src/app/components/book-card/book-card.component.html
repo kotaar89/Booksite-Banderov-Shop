@@ -1,0 +1,55 @@
+<div class="card book-card" (click)="onCardClick()">
+  <!-- Бейджи скидки и популярности -->
+  <div class="book-badges">
+    @if (discountPercent) {
+      <span class="badge badge-promo">
+        <i class="fa-solid fa-fire"></i> -{{ discountPercent }}%
+      </span>
+    }
+    @if (book.is_popular) {
+      <span class="badge badge-popular">
+        <i class="fa-solid fa-star"></i> Хит
+      </span>
+    }
+  </div>
+
+  <!-- Обложка книги -->
+  <div class="book-card-cover">
+    @if (!imageFailed) {
+      <img [src]="'/images/books/' + book.image" [alt]="book.title" (error)="onImageError()">
+    } @else {
+      <div class="book-cover-placeholder" [ngClass]="themeClass">
+        <div class="spine"></div>
+        <i class="fa-solid fa-book cover-icon"></i>
+        <div class="cover-title">{{ book.title }}</div>
+        <div class="cover-author">{{ book.author }}</div>
+      </div>
+    }
+  </div>
+
+  <!-- Описание и цена -->
+  <div class="book-card-body">
+    <div class="book-category">{{ book.category_name || 'Книга' }}</div>
+    <h3 class="book-title" [title]="book.title">{{ book.title }}</h3>
+    <div class="book-author">{{ book.author }}</div>
+
+    <div class="book-rating">
+      <i class="fa-solid fa-star"></i>
+      <span>{{ book.rating }}</span>
+      <span class="rating-stock">· В наличии ({{ book.stock }})</span>
+    </div>
+
+    <div class="book-card-footer">
+      <div class="book-price-block">
+        <span class="book-price">{{ book.price }} ₽</span>
+        @if (book.old_price) {
+          <span class="book-old-price">{{ book.old_price }} ₽</span>
+        }
+      </div>
+
+      <button (click)="onAddToCart($event)" class="btn btn-primary btn-sm add-cart-btn" title="Добавить в корзину">
+        <i class="fa-solid fa-cart-plus"></i> В корзину
+      </button>
+    </div>
+  </div>
+</div>

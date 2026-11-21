@@ -1,0 +1,57 @@
+<footer class="footer">
+  <div class="container footer-content">
+    <div class="footer-col brand-col">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-book-open"></i>
+        </div>
+        <span class="logo-title">БукРид</span>
+      </div>
+      <p class="brand-desc">
+        Ваш уютный книжный уголок. Шедевры мировой литературы, горячие новинки и бестселлеры с быстрой доставкой прямо к вашей двери.
+      </p>
+      <div class="social-links">
+        <a href="javascript:void(0)" class="social-icon" aria-label="VK"><i class="fa-brands fa-vk"></i></a>
+        <a href="javascript:void(0)" class="social-icon" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
+        <a href="javascript:void(0)" class="social-icon" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-heading">Навигация</h4>
+      <ul class="footer-list">
+        <li><a routerLink="/">Главная</a></li>
+        <li><a routerLink="/catalog">Каталог книг</a></li>
+        <li><a routerLink="/cart">Корзина покупок</a></li>
+        <li><a routerLink="/cabinet">Личный кабинет</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-heading">Жанры</h4>
+      <ul class="footer-list">
+        <li><a routerLink="/catalog" [queryParams]="{category: 'classics'}">Классическая литература</a></li>
+        <li><a routerLink="/catalog" [queryParams]="{category: 'sci-fi-fantasy'}">Фантастика и фэнтези</a></li>
+        <li><a routerLink="/catalog" [queryParams]="{category: 'business'}">Бизнес и саморазвитие</a></li>
+        <li><a routerLink="/catalog" [queryParams]="{category: 'detective'}">Детективы и триллеры</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-heading">Помощь и контакты</h4>
+      <ul class="footer-list">
+        <li><i class="fa-solid fa-phone"></i> +7 (800) 555-35-35</li>
+        <li><i class="fa-solid fa-envelope"></i> info&#64;bookread.ru</li>
+        <li><i class="fa-solid fa-location-dot"></i> г. Москва, ул. Книжная, д. 42</li>
+        <li><i class="fa-solid fa-clock"></i> Ежедневно с 9:00 до 21:00</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container footer-bottom-inner">
+      <p>© {{ currentYear }} «БукРид». Учебный проект интернет-магазина (Angular + PHP + MySQL MAMP).</p>
+      <p>Все права защищены.</p>
+    </div>
+  </div>
+</footer>

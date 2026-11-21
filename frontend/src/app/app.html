@@ -1,0 +1,15 @@
+<app-header></app-header>
+
+<main class="page-content">
+  <router-outlet></router-outlet>
+</main>
+
+<app-footer></app-footer>
+
+<!-- Всплывающее уведомление о добавлении в корзину -->
+@if (cartService.lastAddedMessage()) {
+  <div class="toast-notification">
+    <i class="fa-solid fa-circle-check" style="color: #34d399;"></i>
+    <span>{{ cartService.lastAddedMessage() }}</span>
+  </div>
+}

@@ -1,0 +1,57 @@
+<div class="auth-page container">
+  <div class="auth-card card">
+    <div class="auth-header">
+      <div class="auth-icon">
+        <i class="fa-solid fa-right-to-bracket"></i>
+      </div>
+      <h1 class="auth-title">Вход в аккаунт</h1>
+      <p class="auth-subtitle">Войдите, чтобы отслеживать заказы и получать скидки</p>
+    </div>
+
+    <!-- Подсказка для быстрого тестирования -->
+    <div class="demo-box" (click)="fillDemo()">
+      <i class="fa-solid fa-wand-magic-sparkles"></i>
+      <div>
+        <span>Тестовый аккаунт: <strong>test&#64;example.com</strong> / <strong>123456</strong></span>
+        <div class="demo-sub">Нажмите сюда, чтобы заполнить автоматически</div>
+      </div>
+    </div>
+
+    <form (ngSubmit)="onLogin()" class="auth-form">
+      <div class="form-group">
+        <label class="form-label" for="loginEmail">Электронная почта</label>
+        <div class="input-with-icon">
+          <i class="fa-regular fa-envelope"></i>
+          <input id="loginEmail" type="email" [(ngModel)]="email" name="email" required class="form-input" placeholder="mail@example.com" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="loginPass">Пароль</label>
+        <div class="input-with-icon">
+          <i class="fa-solid fa-lock"></i>
+          <input id="loginPass" type="password" [(ngModel)]="password" name="password" required class="form-input" placeholder="••••••••" />
+        </div>
+      </div>
+
+      @if (errorMessage) {
+        <div class="auth-error">
+          <i class="fa-solid fa-circle-exclamation"></i> {{ errorMessage }}
+        </div>
+      }
+
+      <button type="submit" [disabled]="isLoading" class="btn btn-primary btn-lg auth-submit-btn">
+        @if (isLoading) {
+          <i class="fa-solid fa-spinner fa-spin"></i> Вход...
+        } @else {
+          Войти в аккаунт
+        }
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <span>Нет аккаунта?</span>
+      <a routerLink="/register" class="auth-link">Зарегистрироваться</a>
+    </div>
+  </div>
+</div>

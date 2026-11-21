@@ -1,0 +1,186 @@
+<!-- Hero Секция с промо-баннером -->
+<section class="hero-section">
+  <div class="container hero-container">
+    <div class="hero-text">
+      <div class="hero-badge">
+        <i class="fa-solid fa-sparkles"></i> Сезонное спецпредложение
+      </div>
+      <h1 class="hero-title">Открой для себя миры, которые не отпускают</h1>
+      <p class="hero-desc">
+        Более тысячи бестселлеров, нестареющей классики и громких новинок. Читайте с удовольствием и покупайте по выгодным ценам!
+      </p>
+      <div class="hero-actions">
+        <a routerLink="/catalog" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-book-open"></i> В каталог книг
+        </a>
+        <a routerLink="/catalog" [queryParams]="{promo: '1'}" class="btn btn-outline btn-lg">
+          <i class="fa-solid fa-fire" style="color: #ef4444;"></i> Горячие скидки
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-banner-card">
+      <div class="promo-sticker">АКЦИЯ -30%</div>
+      <div class="promo-card-content">
+        <i class="fa-solid fa-bookmark promo-icon"></i>
+        <h3>Книга недели</h3>
+        <p class="promo-book-title">«Мастер и Маргарита»</p>
+        <p class="promo-book-author">Михаил Булгаков</p>
+        <div class="promo-price-tag">
+          <span class="new">650 ₽</span>
+          <span class="old">850 ₽</span>
+        </div>
+        <a routerLink="/catalog" [queryParams]="{search: 'Мастер и Маргарита'}" class="btn btn-accent btn-sm">
+          Заказать сейчас
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Преимущества магазина -->
+<section class="features-bar">
+  <div class="container features-grid">
+    <div class="feature-item">
+      <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
+      <div>
+        <h4>Быстрая доставка</h4>
+        <p>Курьером или в пункт выдачи от 1 дня</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon"><i class="fa-solid fa-certificate"></i></div>
+      <div>
+        <h4>100% Оригинал</h4>
+        <p>Только официальные издательства</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon"><i class="fa-solid fa-tags"></i></div>
+      <div>
+        <h4>Честные цены</h4>
+        <p>Постоянные скидки и бонусы за покупки</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div>
+        <h4>Безопасная оплата</h4>
+        <p>Картой онлайн или при получении</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container main-content">
+  <!-- Секция: Акции и скидки -->
+  <section class="section">
+    <div class="section-header">
+      <div>
+        <span class="section-tag"><i class="fa-solid fa-percent"></i> Выгода</span>
+        <h2 class="section-title">Акции и специальные предложения</h2>
+      </div>
+      <a routerLink="/catalog" [queryParams]="{promo: '1'}" class="section-link">
+        Смотреть все акции <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="books-grid">
+      @for (book of promoBooks; track book.id) {
+        <app-book-card [book]="book" (viewDetails)="openDetails($event)"></app-book-card>
+      }
+    </div>
+  </section>
+
+  <!-- Категории книг -->
+  <section class="section categories-section">
+    <div class="section-header">
+      <div>
+        <span class="section-tag"><i class="fa-solid fa-icons"></i> Разделы</span>
+        <h2 class="section-title">Популярные категории</h2>
+      </div>
+      <a routerLink="/catalog" class="section-link">
+        Все категории <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="categories-grid">
+      @for (cat of categories; track cat.id) {
+        <a [routerLink]="['/catalog']" [queryParams]="{category: cat.slug}" class="category-card">
+          <div class="cat-icon-wrap">
+            <i class="fa-solid fa-book"></i>
+          </div>
+          <h4 class="cat-name">{{ cat.name }}</h4>
+          <span class="cat-count">Смотреть книги <i class="fa-solid fa-chevron-right"></i></span>
+        </a>
+      }
+    </div>
+  </section>
+
+  <!-- Секция: Популярное / Выбор читателей -->
+  <section class="section">
+    <div class="section-header">
+      <div>
+        <span class="section-tag"><i class="fa-solid fa-fire"></i> В тренде</span>
+        <h2 class="section-title">Популярные книги и выбор читателей</h2>
+      </div>
+      <a routerLink="/catalog" class="section-link">
+        В каталог <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="books-grid">
+      @for (book of popularBooks; track book.id) {
+        <app-book-card [book]="book" (viewDetails)="openDetails($event)"></app-book-card>
+      }
+    </div>
+  </section>
+</div>
+
+<!-- Модальное окно с деталями книги -->
+@if (selectedBook) {
+  <div class="modal-backdrop" (click)="closeDetails()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeDetails()" aria-label="Закрыть">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-body">
+        <div class="modal-cover-wrap">
+          <div class="book-cover-placeholder theme-1">
+            <div class="spine"></div>
+            <i class="fa-solid fa-book cover-icon"></i>
+            <div class="cover-title">{{ selectedBook.title }}</div>
+            <div class="cover-author">{{ selectedBook.author }}</div>
+          </div>
+        </div>
+
+        <div class="modal-info">
+          <div class="badge badge-category">{{ selectedBook.category_name || 'Книга' }}</div>
+          <h2 class="modal-title">{{ selectedBook.title }}</h2>
+          <div class="modal-author"><i class="fa-solid fa-feather-pointed"></i> Автор: {{ selectedBook.author }}</div>
+
+          <div class="modal-rating">
+            <i class="fa-solid fa-star"></i>
+            <span>{{ selectedBook.rating }} / 5.0</span>
+            <span class="modal-stock">· В наличии: {{ selectedBook.stock }} шт.</span>
+          </div>
+
+          <p class="modal-desc">{{ selectedBook.description }}</p>
+
+          <div class="modal-price-box">
+            <div>
+              <span class="modal-price">{{ selectedBook.price }} ₽</span>
+              @if (selectedBook.old_price) {
+                <span class="modal-old-price">{{ selectedBook.old_price }} ₽</span>
+              }
+            </div>
+            <button (click)="addToCartFromModal(selectedBook)" class="btn btn-primary btn-lg">
+              <i class="fa-solid fa-cart-plus"></i> В корзину
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+
+.book-card {
+  height: 100%;
+  cursor: pointer;
+  background: #ffffff;
+}
+
+.rating-stock {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: normal;
+  margin-left: 4px;
+}
+
+.add-cart-btn {
+  white-space: nowrap;
+}
+
+.add-cart-btn:active {
+  transform: scale(0.96);
+}

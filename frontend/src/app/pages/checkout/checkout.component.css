@@ -1,0 +1,271 @@
+.checkout-page {
+  padding: 40px 20px 80px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.page-subtitle {
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+.auth-prompt-card {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 30px;
+  align-items: start;
+}
+
+.checkout-section {
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 18px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-main);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.section-title i {
+  color: var(--primary);
+  font-size: 16px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Оплата */
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.payment-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.payment-card:hover {
+  border-color: #cbd5e1;
+  background-color: #f8fafc;
+}
+
+.payment-card.selected {
+  border-color: var(--primary);
+  background-color: #f5f3ff;
+}
+
+.payment-card input[type="radio"] {
+  accent-color: var(--primary);
+  width: 18px;
+  height: 18px;
+}
+
+.payment-card-body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.payment-icon {
+  font-size: 22px;
+  color: var(--primary);
+  width: 28px;
+  text-align: center;
+}
+
+.payment-title {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.payment-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.error-banner {
+  background-color: var(--danger-light);
+  color: var(--danger);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.submit-order-btn {
+  width: 100%;
+}
+
+/* Обзор заказа */
+.order-review-card {
+  padding: 24px;
+  position: sticky;
+  top: 90px;
+}
+
+.review-title {
+  font-size: 18px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.review-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.review-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.review-item-title {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.review-item-qty {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.review-item-total {
+  font-weight: 700;
+}
+
+.review-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 14px 0;
+}
+
+.review-cost-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.review-cost-row .free {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.review-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.total-price {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+/* Экран успеха */
+.success-screen {
+  text-align: center;
+  padding: 60px 24px;
+  max-width: 650px;
+  margin: 30px auto;
+}
+
+.success-icon-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: var(--success-light);
+  color: var(--success);
+  font-size: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.success-title {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.success-number {
+  font-size: 18px;
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+
+.success-desc {
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.success-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}

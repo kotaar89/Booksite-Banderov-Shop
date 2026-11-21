@@ -1,0 +1,183 @@
+<div class="container checkout-page">
+  @if (orderSuccess) {
+    <!-- Экран успешного оформления заказа -->
+    <div class="success-screen card">
+      <div class="success-icon-wrap">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <h1 class="success-title">Спасибо за заказ!</h1>
+      <p class="success-number">Номер вашего заказа: <strong>#{{ createdOrderId }}</strong></p>
+      <p class="success-desc">
+        Мы уже начали бережно собирать ваши книги. Детали заказа и уведомления будут отправлены на ваш телефон и email.
+      </p>
+
+      <div class="success-actions">
+        @if (authService.isLoggedIn()) {
+          <a routerLink="/cabinet" class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-user"></i> Перейти в личный кабинет
+          </a>
+        }
+        <a routerLink="/" class="btn btn-outline btn-lg">
+          <i class="fa-solid fa-house"></i> На главную
+        </a>
+      </div>
+    </div>
+  } @else if (cartService.items().length === 0) {
+    <div class="empty-state card">
+      <i class="fa-solid fa-basket-shopping empty-icon"></i>
+      <h2>В вашей корзине нет товаров</h2>
+      <p>Чтобы оформить заказ, сначала добавьте книги в корзину.</p>
+      <a routerLink="/catalog" class="btn btn-primary btn-lg">В каталог</a>
+    </div>
+  } @else {
+    <!-- Форма оформления заказа -->
+    <div class="page-header">
+      <h1 class="page-title">Оформление заказа</h1>
+      <p class="page-subtitle">Заполните данные для доставки и выберите удобный способ оплаты</p>
+    </div>
+
+    @if (!authService.isLoggedIn()) {
+      <div class="auth-prompt-card">
+        <i class="fa-solid fa-user-circle"></i>
+        <span>Уже есть аккаунт?</span>
+        <a routerLink="/login" class="btn-link">Войдите</a>, чтобы данные заполнились автоматически!
+      </div>
+    }
+
+    <div class="checkout-layout">
+      <!-- Левая колонка: форма данных -->
+      <form (ngSubmit)="onSubmit()" class="checkout-form">
+        <!-- Блок 1: Контактные данные -->
+        <div class="card checkout-section">
+          <h3 class="section-title"><i class="fa-solid fa-user"></i> 1. Данные получателя</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="cName">Имя и фамилия *</label>
+              <input id="cName" type="text" [(ngModel)]="customerName" name="customerName" required class="form-input" placeholder="Иван Иванов" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cPhone">Номер телефона *</label>
+              <input id="cPhone" type="tel" [(ngModel)]="customerPhone" name="customerPhone" required class="form-input" placeholder="+7 (999) 000-00-00" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="cEmail">Электронная почта (для чека и трек-номера)</label>
+            <input id="cEmail" type="email" [(ngModel)]="customerEmail" name="customerEmail" class="form-input" placeholder="example@mail.ru" />
+          </div>
+        </div>
+
+        <!-- Блок 2: Доставка -->
+        <div class="card checkout-section">
+          <h3 class="section-title"><i class="fa-solid fa-truck"></i> 2. Адрес доставки</h3>
+
+          <div class="form-group">
+            <label class="form-label" for="cAddress">Город, улица, дом, квартира *</label>
+            <textarea id="cAddress" [(ngModel)]="deliveryAddress" name="deliveryAddress" required rows="2" class="form-textarea" placeholder="г. Москва, ул. Пушкина, д. 15, кв. 42"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="cComments">Комментарий курьеру (домофон, подъезд, этаж)</label>
+            <input id="cComments" type="text" [(ngModel)]="comments" name="comments" class="form-input" placeholder="Код домофона 42, 3 этаж" />
+          </div>
+        </div>
+
+        <!-- Блок 3: Способ оплаты -->
+        <div class="card checkout-section">
+          <h3 class="section-title"><i class="fa-solid fa-credit-card"></i> 3. Способ оплаты</h3>
+
+          <div class="payment-options">
+            <label class="payment-card" [class.selected]="paymentMethod === 'card_online'">
+              <input type="radio" [(ngModel)]="paymentMethod" name="paymentMethod" value="card_online" />
+              <div class="payment-card-body">
+                <i class="fa-solid fa-credit-card payment-icon"></i>
+                <div class="payment-info">
+                  <div class="payment-title">Банковской картой онлайн</div>
+                  <div class="payment-sub">МИР, Visa, MasterCard</div>
+                </div>
+              </div>
+            </label>
+
+            <label class="payment-card" [class.selected]="paymentMethod === 'sbp'">
+              <input type="radio" [(ngModel)]="paymentMethod" name="paymentMethod" value="sbp" />
+              <div class="payment-card-body">
+                <i class="fa-solid fa-qrcode payment-icon"></i>
+                <div class="payment-info">
+                  <div class="payment-title">СБП (Система быстрых платежей)</div>
+                  <div class="payment-sub">Мгновенная оплата по QR-коду</div>
+                </div>
+              </div>
+            </label>
+
+            <label class="payment-card" [class.selected]="paymentMethod === 'upon_receipt'">
+              <input type="radio" [(ngModel)]="paymentMethod" name="paymentMethod" value="upon_receipt" />
+              <div class="payment-card-body">
+                <i class="fa-solid fa-hand-holding-dollar payment-icon"></i>
+                <div class="payment-info">
+                  <div class="payment-title">При получении курьеру</div>
+                  <div class="payment-sub">Наличными или картой курьеру</div>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        @if (errorMessage) {
+          <div class="error-banner">
+            <i class="fa-solid fa-triangle-exclamation"></i> {{ errorMessage }}
+          </div>
+        }
+
+        <button type="submit" [disabled]="isSubmitting" class="btn btn-primary btn-lg submit-order-btn">
+          @if (isSubmitting) {
+            <i class="fa-solid fa-spinner fa-spin"></i> Оформление...
+          } @else {
+            <i class="fa-solid fa-check"></i> Подтвердить и оформить заказ на {{ finalTotal }} ₽
+          }
+        </button>
+      </form>
+
+      <!-- Правая колонка: Состав заказа -->
+      <div class="order-review-col">
+        <div class="card order-review-card">
+          <h3 class="review-title">Состав заказа</h3>
+
+          <div class="review-items-list">
+            @for (item of cartService.items(); track item.book.id) {
+              <div class="review-item">
+                <div class="review-item-info">
+                  <div class="review-item-title">{{ item.book.title }}</div>
+                  <div class="review-item-qty">{{ item.quantity }} × {{ item.book.price }} ₽</div>
+                </div>
+                <div class="review-item-total">{{ item.quantity * item.book.price }} ₽</div>
+              </div>
+            }
+          </div>
+
+          <div class="review-divider"></div>
+
+          <div class="review-cost-row">
+            <span>Товары ({{ cartService.totalCount() }} шт.):</span>
+            <span>{{ cartService.totalPrice() }} ₽</span>
+          </div>
+
+          <div class="review-cost-row">
+            <span>Доставка:</span>
+            <span [class.free]="deliveryCost === 0">
+              {{ deliveryCost === 0 ? 'Бесплатно' : deliveryCost + ' ₽' }}
+            </span>
+          </div>
+
+          <div class="review-divider"></div>
+
+          <div class="review-total-row">
+            <span>Итого:</span>
+            <span class="total-price">{{ finalTotal }} ₽</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

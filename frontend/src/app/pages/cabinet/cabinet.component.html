@@ -1,0 +1,160 @@
+<div class="container cabinet-page">
+  <!-- Шапка профиля -->
+  <div class="profile-header card">
+    <div class="profile-main">
+      <div class="profile-avatar">
+        <i class="fa-solid fa-user"></i>
+      </div>
+      <div class="profile-titles">
+        <h1 class="profile-name">{{ user?.name }}</h1>
+        <div class="profile-email"><i class="fa-regular fa-envelope"></i> {{ user?.email }}</div>
+        @if (user?.phone) {
+          <div class="profile-phone"><i class="fa-solid fa-phone"></i> {{ user?.phone }}</div>
+        }
+      </div>
+    </div>
+
+    <div class="profile-stats">
+      <div class="stat-box">
+        <span class="stat-num">{{ totalOrders }}</span>
+        <span class="stat-lbl">Заказов</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">{{ totalSpent }} ₽</span>
+        <span class="stat-lbl">Покупок</span>
+      </div>
+      <button (click)="logout()" class="btn btn-outline btn-sm logout-btn" title="Выйти">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Выйти
+      </button>
+    </div>
+  </div>
+
+  <!-- Вкладки личного кабинета -->
+  <div class="cabinet-tabs">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'orders'"
+      (click)="activeTab = 'orders'"
+    >
+      <i class="fa-solid fa-box-archive"></i> Мои заказы ({{ orders.length }})
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'profile'"
+      (click)="activeTab = 'profile'"
+    >
+      <i class="fa-solid fa-gear"></i> Настройки профиля
+    </button>
+  </div>
+
+  <!-- Вкладка 1: История заказов -->
+  @if (activeTab === 'orders') {
+    <div class="orders-section">
+      @if (isLoading) {
+        <div class="loading-box">
+          <i class="fa-solid fa-spinner fa-spin"></i> Загрузка заказов...
+        </div>
+      } @else if (orders.length === 0) {
+        <div class="empty-orders card">
+          <i class="fa-solid fa-basket-shopping empty-icon"></i>
+          <h3>У вас пока нет заказов</h3>
+          <p>Самое время выбрать свою первую книгу из нашего каталога!</p>
+          <a routerLink="/catalog" class="btn btn-primary">В каталог</a>
+        </div>
+      } @else {
+        <div class="orders-list">
+          @for (order of orders; track order.id) {
+            <div class="order-card card">
+              <div class="order-card-header">
+                <div class="order-id-date">
+                  <span class="order-id">Заказ #{{ order.id }}</span>
+                  <span class="order-date">{{ order.created_at || 'Недавно' }}</span>
+                </div>
+                <div class="order-status-badge" [ngClass]="{
+                  'status-new': order.status === 'Новый',
+                  'status-proc': order.status === 'В обработке',
+                  'status-done': order.status === 'Доставлен'
+                }">
+                  {{ order.status || 'Новый' }}
+                </div>
+              </div>
+
+              <!-- Товары в заказе -->
+              @if (order.items && order.items.length > 0) {
+                <div class="order-items-table">
+                  @for (item of order.items; track item.id || item.title) {
+                    <div class="order-item-row">
+                      <span class="item-name"><i class="fa-solid fa-book-bookmark"></i> {{ item.title }}</span>
+                      <span class="item-qty">{{ item.quantity }} шт. × {{ item.price }} ₽</span>
+                      <span class="item-subtotal">{{ item.quantity * item.price }} ₽</span>
+                    </div>
+                  }
+                </div>
+              }
+
+              <div class="order-card-footer">
+                <div class="order-address">
+                  <i class="fa-solid fa-location-dot"></i> {{ order.delivery_address }}
+                </div>
+                <div class="order-total">
+                  Сумма заказа: <strong>{{ order.total_amount }} ₽</strong>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Вкладка 2: Настройки профиля -->
+  @if (activeTab === 'profile') {
+    <div class="profile-settings-card card">
+      <h3 class="settings-title">Личные данные и адрес доставки</h3>
+      <p class="settings-sub">Эти данные будут автоматически подставляться при оформлении заказов</p>
+
+      @if (successMessage) {
+        <div class="alert-success">
+          <i class="fa-solid fa-circle-check"></i> {{ successMessage }}
+        </div>
+      }
+
+      @if (errorMessage) {
+        <div class="alert-error">
+          <i class="fa-solid fa-circle-exclamation"></i> {{ errorMessage }}
+        </div>
+      }
+
+      <form (ngSubmit)="saveProfile()" class="settings-form">
+        <div class="form-group">
+          <label class="form-label" for="editName">Имя и фамилия</label>
+          <input id="editName" type="text" [(ngModel)]="editName" name="editName" required class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email (логин)</label>
+          <input type="text" [value]="user?.email" disabled class="form-input disabled-input" />
+          <small class="form-hint">Email привязан к аккаунту и не подлежит изменению</small>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="editPhone">Номер телефона</label>
+          <input id="editPhone" type="tel" [(ngModel)]="editPhone" name="editPhone" class="form-input" placeholder="+7 (999) 000-00-00" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="editAddress">Основной адрес доставки</label>
+          <textarea id="editAddress" [(ngModel)]="editAddress" name="editAddress" rows="3" class="form-textarea" placeholder="г. Москва, ул. Ленина, д. 10, кв. 25"></textarea>
+        </div>
+
+        <button type="submit" [disabled]="isSaving" class="btn btn-primary btn-lg save-btn">
+          @if (isSaving) {
+            <i class="fa-solid fa-spinner fa-spin"></i> Сохранение...
+          } @else {
+            <i class="fa-solid fa-floppy-disk"></i> Сохранить изменения
+          }
+        </button>
+      </form>
+    </div>
+  }
+</div>

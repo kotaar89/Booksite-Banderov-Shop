@@ -1,0 +1,120 @@
+<div class="container cart-page">
+  <div class="page-header">
+    <h1 class="page-title">Корзина покупок</h1>
+    <p class="page-subtitle">Проверьте выбранные книги перед оформлением заказа</p>
+  </div>
+
+  @if (cartService.items().length === 0) {
+    <div class="empty-cart card">
+      <div class="empty-cart-icon">
+        <i class="fa-solid fa-basket-shopping"></i>
+      </div>
+      <h2>Ваша корзина пуста</h2>
+      <p>Кажется, вы еще не добавили ни одной книги. Загляните в наш каталог, там много интересного!</p>
+      <a routerLink="/catalog" class="btn btn-primary btn-lg">
+        <i class="fa-solid fa-book-open"></i> Перейти в каталог
+      </a>
+    </div>
+  } @else {
+    <div class="cart-layout">
+      <!-- Список товаров -->
+      <div class="cart-items-wrapper">
+        <div class="cart-items-header">
+          <span>Товары ({{ cartService.totalCount() }})</span>
+          <button (click)="clearCart()" class="btn-clear-cart">
+            <i class="fa-regular fa-trash-can"></i> Очистить корзину
+          </button>
+        </div>
+
+        <div class="cart-items-list">
+          @for (item of cartService.items(); track item.book.id) {
+            <div class="cart-item card">
+              <div class="cart-item-cover">
+                <div class="book-cover-placeholder theme-3">
+                  <div class="spine"></div>
+                  <i class="fa-solid fa-book cover-icon"></i>
+                </div>
+              </div>
+
+              <div class="cart-item-details">
+                <div class="cart-item-cat">{{ item.book.category_name || 'Книга' }}</div>
+                <h3 class="cart-item-title">{{ item.book.title }}</h3>
+                <div class="cart-item-author">{{ item.book.author }}</div>
+                <div class="cart-item-single-price">{{ item.book.price }} ₽ / шт.</div>
+              </div>
+
+              <div class="cart-item-quantity">
+                <div class="qty-control">
+                  <button (click)="decrease(item.book, item.quantity)" class="qty-btn" aria-label="Уменьшить">
+                    <i class="fa-solid fa-minus"></i>
+                  </button>
+                  <span class="qty-value">{{ item.quantity }}</span>
+                  <button (click)="increase(item.book, item.quantity)" class="qty-btn" aria-label="Увеличить">
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="cart-item-sum">
+                <span class="sum-value">{{ item.book.price * item.quantity }} ₽</span>
+              </div>
+
+              <div class="cart-item-delete">
+                <button (click)="removeItem(item.book.id)" class="delete-btn" title="Удалить из корзины">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="cart-continue">
+          <a routerLink="/catalog" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i> Продолжить покупки
+          </a>
+        </div>
+      </div>
+
+      <!-- Итог заказа (Сайдбар) -->
+      <div class="cart-summary-sidebar">
+        <div class="card summary-card">
+          <h3 class="summary-title">Итог заказа</h3>
+
+          <div class="summary-row">
+            <span>Стоимость книг ({{ cartService.totalCount() }} шт.):</span>
+            <span class="val">{{ cartService.totalPrice() }} ₽</span>
+          </div>
+
+          <div class="summary-row">
+            <span>Доставка:</span>
+            <span class="val" [class.free]="deliveryCost === 0">
+              {{ deliveryCost === 0 ? 'Бесплатно' : deliveryCost + ' ₽' }}
+            </span>
+          </div>
+
+          @if (deliveryCost > 0) {
+            <div class="free-delivery-tip">
+              <i class="fa-solid fa-circle-info"></i> Добавьте товаров еще на {{ 2000 - cartService.totalPrice() }} ₽ для бесплатной доставки!
+            </div>
+          }
+
+          <div class="summary-divider"></div>
+
+          <div class="summary-total-row">
+            <span>К оплате:</span>
+            <span class="total-val">{{ finalTotal }} ₽</span>
+          </div>
+
+          <a routerLink="/checkout" class="btn btn-primary btn-lg checkout-btn">
+            Перейти к оформлению <i class="fa-solid fa-arrow-right"></i>
+          </a>
+
+          <div class="summary-guarantees">
+            <div><i class="fa-solid fa-shield-halved"></i> Безопасная сделка</div>
+            <div><i class="fa-solid fa-rotate-left"></i> 14 дней на возврат</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

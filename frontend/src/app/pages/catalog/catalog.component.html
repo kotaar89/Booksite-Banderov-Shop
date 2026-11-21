@@ -1,0 +1,149 @@
+<div class="container catalog-page">
+  <!-- Хлебные крошки и заголовок -->
+  <div class="page-header">
+    <div class="header-titles">
+      <h1 class="page-title">Каталог книг</h1>
+      <p class="page-subtitle">Широкий выбор изданий от классики до современных мировых бестселлеров</p>
+    </div>
+  </div>
+
+  <!-- Панель управления и поиска -->
+  <div class="toolbar card">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        placeholder="Поиск по названию, автору или ключевым словам..."
+        class="search-input"
+      />
+      @if (searchQuery) {
+        <button class="clear-btn" (click)="searchQuery = ''; onSearch()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      }
+      <button class="btn btn-primary search-submit" (click)="onSearch()">Найти</button>
+    </div>
+
+    <div class="filter-actions">
+      <!-- Переключатель акций -->
+      <button
+        class="btn btn-sm promo-filter-btn"
+        [class.active]="onlyPromo"
+        (click)="onPromoToggle()"
+      >
+        <i class="fa-solid fa-fire"></i> Только со скидкой
+      </button>
+
+      <!-- Сортировка -->
+      <div class="sort-box">
+        <label for="sortSelect"><i class="fa-solid fa-arrow-down-short-wide"></i> Сортировка:</label>
+        <select id="sortSelect" [(ngModel)]="sortBy" (change)="onSortChange()" class="sort-select">
+          <option value="default">По умолчанию</option>
+          <option value="price-asc">Сначала дешевле</option>
+          <option value="price-desc">Сначала дороже</option>
+          <option value="rating">По рейтингу</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Категории (горизонтальные теги / фильтры) -->
+  <div class="category-tabs">
+    <button
+      class="cat-tab"
+      [class.active]="selectedCategory === 'all'"
+      (click)="onCategorySelect('all')"
+    >
+      Все книги
+    </button>
+    @for (cat of categories; track cat.id) {
+      <button
+        class="cat-tab"
+        [class.active]="selectedCategory === cat.slug"
+        (click)="onCategorySelect(cat.slug)"
+      >
+        {{ cat.name }}
+      </button>
+    }
+  </div>
+
+  <!-- Результаты каталога -->
+  <div class="catalog-status">
+    <span>Найдено книг: <strong>{{ books.length }}</strong></span>
+    @if (selectedCategory !== 'all' || searchQuery || onlyPromo) {
+      <button class="btn-link" (click)="resetFilters()">
+        <i class="fa-solid fa-rotate-left"></i> Сбросить все фильтры
+      </button>
+    }
+  </div>
+
+  @if (loading) {
+    <div class="loading-state">
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      <p>Загрузка книг...</p>
+    </div>
+  } @else if (books.length === 0) {
+    <div class="empty-state card">
+      <div class="empty-icon"><i class="fa-solid fa-book-skull"></i></div>
+      <h3>Книги не найдены</h3>
+      <p>По вашему запросу ничего не нашлось. Попробуйте изменить фильтры или фразу поиска.</p>
+      <button class="btn btn-primary" (click)="resetFilters()">Сбросить фильтры</button>
+    </div>
+  } @else {
+    <div class="books-grid">
+      @for (book of books; track book.id) {
+        <app-book-card [book]="book" (viewDetails)="openDetails($event)"></app-book-card>
+      }
+    </div>
+  }
+</div>
+
+<!-- Модальное окно с деталями книги -->
+@if (selectedBook) {
+  <div class="modal-backdrop" (click)="closeDetails()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeDetails()" aria-label="Закрыть">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-body">
+        <div class="modal-cover-wrap">
+          <div class="book-cover-placeholder theme-2">
+            <div class="spine"></div>
+            <i class="fa-solid fa-book cover-icon"></i>
+            <div class="cover-title">{{ selectedBook.title }}</div>
+            <div class="cover-author">{{ selectedBook.author }}</div>
+          </div>
+        </div>
+
+        <div class="modal-info">
+          <div class="badge badge-category">{{ selectedBook.category_name || 'Книга' }}</div>
+          <h2 class="modal-title">{{ selectedBook.title }}</h2>
+          <div class="modal-author"><i class="fa-solid fa-feather-pointed"></i> Автор: {{ selectedBook.author }}</div>
+
+          <div class="modal-rating">
+            <i class="fa-solid fa-star"></i>
+            <span>{{ selectedBook.rating }} / 5.0</span>
+            <span class="modal-stock">· В наличии: {{ selectedBook.stock }} шт.</span>
+          </div>
+
+          <p class="modal-desc">{{ selectedBook.description }}</p>
+
+          <div class="modal-price-box">
+            <div>
+              <span class="modal-price">{{ selectedBook.price }} ₽</span>
+              @if (selectedBook.old_price) {
+                <span class="modal-old-price">{{ selectedBook.old_price }} ₽</span>
+              }
+            </div>
+            <button (click)="addToCartFromModal(selectedBook)" class="btn btn-primary btn-lg">
+              <i class="fa-solid fa-cart-plus"></i> В корзину
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
