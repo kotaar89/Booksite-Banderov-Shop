@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -14,6 +14,7 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   email = 'test@example.com';
   password = '';
@@ -33,7 +34,9 @@ export class LoginComponent {
       next: (res) => {
         this.isLoading = false;
         if (res.success) {
-          this.router.navigate(['/cabinet']);
+          // Если Guard перенаправил на логин (например, с /checkout), возвращаем пользователя туда
+          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/cabinet';
+          this.router.navigateByUrl(returnUrl);
         } else {
           this.errorMessage = res.error || 'Ошибка входа';
         }

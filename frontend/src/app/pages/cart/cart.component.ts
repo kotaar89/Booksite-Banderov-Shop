@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
 import { Book } from '../../models/book.model';
 
 @Component({
@@ -13,6 +14,7 @@ import { Book } from '../../models/book.model';
 })
 export class CartComponent {
   public cartService = inject(CartService);
+  public authService = inject(AuthService);
 
   get deliveryCost(): number {
     if (this.cartService.totalPrice() >= 2000 || this.cartService.totalPrice() === 0) {
