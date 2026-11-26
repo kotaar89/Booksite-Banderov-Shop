@@ -1,6 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
 import { User, Order } from '../models/book.model';
 import { API_CONFIG } from '../config/api.config';
@@ -40,6 +40,7 @@ export class AuthService {
     }
   }
 
+  // Настоящая регистрация в MySQL через PHP (api/auth/register.php)
   register(userData: { name: string; email: string; password: string; phone?: string; address?: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register.php`, userData).pipe(
       tap(res => {
@@ -48,24 +49,13 @@ export class AuthService {
         }
       }),
       catchError(err => {
-        // Fallback если PHP сервер выключен (для демо)
-        if (err.status === 0 || err.status === 404) {
-          console.warn('Сервер PHP не отвечает, используем локальную регистрацию для тестирования');
-          const mockUser: User = {
-            id: Date.now(),
-            name: userData.name,
-            email: userData.email,
-            phone: userData.phone || '+7 (999) 000-00-00',
-            address: userData.address || 'г. Москва'
-          };
-          this.setSession(mockUser, 'demo_token_' + Date.now());
-          return of({ success: true, user: mockUser, token: 'demo_token' });
-        }
-        return throwError(() => err.error?.error || 'Ошибка при регистрации');
+        const errorMsg = err.error?.error || err.message || 'Ошибка сервера при регистрации';
+        return throwError(() => errorMsg);
       })
     );
   }
 
+  // Настоящий вход через MySQL (api/auth/login.php)
   login(credentials: { email: string; password: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login.php`, credentials).pipe(
       tap(res => {
@@ -74,22 +64,8 @@ export class AuthService {
         }
       }),
       catchError(err => {
-        // Fallback если PHP сервер выключен (тестовый аккаунт)
-        if (err.status === 0 || err.status === 404) {
-          console.warn('Сервер PHP не отвечает, используем локальный вход для тестирования');
-          if (credentials.email === 'test@example.com' && credentials.password === '123456') {
-            const demoUser: User = {
-              id: 1,
-              name: 'Анна Смирнова',
-              email: 'test@example.com',
-              phone: '+7 (999) 123-45-67',
-              address: 'г. Москва, ул. Ленина, д. 10, кв. 25'
-            };
-            this.setSession(demoUser, 'demo_token_123');
-            return of({ success: true, user: demoUser, token: 'demo_token_123' });
-          }
-        }
-        return throwError(() => err.error?.error || 'Неверный email или пароль');
+        const errorMsg = err.error?.error || 'Неверный email или пароль';
+        return throwError(() => errorMsg);
       })
     );
   }
@@ -100,6 +76,7 @@ export class AuthService {
     this.currentUserSignal.set(null);
   }
 
+  // Обновление профиля в MySQL
   updateProfile(user: Partial<User>): Observable<any> {
     const current = this.currentUserSignal();
     const payload = { ...current, ...user };
@@ -110,46 +87,25 @@ export class AuthService {
           const updated = { ...current, ...res.user } as User;
           this.setSession(updated);
         }
-      }),
-      catchError(err => {
-        console.warn('Обновление в локальном режиме', err);
-        const updated = { ...current, ...user } as User;
-        this.setSession(updated);
-        return of({ success: true, user: updated });
       })
     );
   }
 
+  // Загрузка реального профиля и реальных заказов из MySQL (api/auth/profile.php)
   getProfile(userId: number): Observable<{ user: User; orders: Order[] }> {
     return this.http.get<ProfileResponse>(`${this.apiUrl}/auth/profile.php?user_id=${userId}`).pipe(
-      map(res => ({ user: res.user, orders: res.orders })),
+      map(res => ({
+        user: res.user,
+        orders: res.orders || []
+      })),
       catchError(err => {
-        console.warn('Не удалось загрузить профиль с сервера, используем локальные данные', err);
-        const user = this.currentUserSignal() || {
+        // Если у пользователя пока нет заказов или возникла ошибка
+        const currentUser = this.currentUserSignal() || {
           id: userId,
-          name: 'Анна Смирнова',
-          email: 'test@example.com',
-          phone: '+7 (999) 123-45-67',
-          address: 'г. Москва, ул. Ленина, д. 10, кв. 25'
+          name: '',
+          email: ''
         };
-        const orders: Order[] = [
-          {
-            id: 101,
-            user_id: userId,
-            customer_name: user.name,
-            customer_phone: user.phone || '',
-            delivery_address: user.address || '',
-            payment_method: 'Банковской картой онлайн',
-            total_amount: 1570,
-            status: 'Доставлен',
-            created_at: '2026-11-15 14:30',
-            items: [
-              { title: 'Мастер и Маргарита', price: 650, quantity: 1 },
-              { title: 'Дюна', price: 920, quantity: 1 }
-            ]
-          }
-        ];
-        return of({ user, orders });
+        return [{ user: currentUser, orders: [] }];
       })
     );
   }
